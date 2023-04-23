@@ -1,5 +1,5 @@
 # VRBO SCRAPER
-This project is a web scraper written in Python that extracts information from a vacation rental website using GraphQL API.
+This script allows you to scrape hotels and/or comments from a list of URLs in a SQLite database. The script takes a JSON configuration file as input, which specifies whether to scrape hotels and/or comments, and any other necessary parameters such as check-in/check-out dates and location.
 
 ## Getting Started
 To use this program, you will need to have Python 3.x installed on your machine.
