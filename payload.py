@@ -20,7 +20,7 @@ payload_data = json.dumps([
             }
           },
           "destination": {
-            "regionName": "New York, New York, United States of America",
+            "regionName": None,
             # "regionId": "2621",
             "coordinates": None,
             "pinnedPropertyId": None,
@@ -99,3 +99,77 @@ payload_data = json.dumps([
   }
 ])
 
+payload_comments = json.dumps([
+  {
+    "operationName": "PropertyFilteredReviewsQuery",
+    "variables": {
+      "context": {
+        "siteId": 9001001,
+        "locale": "en_US",
+        "eapid": 1,
+        "currency": "USD",
+        "device": {
+          "type": "DESKTOP"
+        },
+        "identity": {
+          "duaid": "01a3e3cf-eaf5-c462-a78b-ed4f4aebf5dc",
+          "expUserId": "-1",
+          "tuid": "-1",
+          "authState": "ANONYMOUS"
+        },
+        "privacyTrackingState": "CAN_TRACK",
+        "debugContext": {
+          "abacusOverrides": [],
+          "alterMode": "RELEASED"
+        }
+      },
+      "propertyId": None,
+      "searchCriteria": {
+        "primary": {
+          "dateRange": None,
+          "rooms": [
+            {
+              "adults": 2
+            }
+          ],
+          "destination": {
+            "regionId": "178293"
+          }
+        },
+        "secondary": {
+          "booleans": [
+            {
+              "id": "includeRecentReviews",
+              "value": True
+            },
+            {
+              "id": "includeRatingsOnlyReviews",
+              "value": True
+            },
+            {
+              "id": "overrideEmbargoForIndividualReviews",
+              "value": True
+            }
+          ],
+          "counts": [
+            {
+              "id": "startIndex",
+              "value": 0
+            },
+            {
+              "id": "size",
+              "value": 100
+            }
+          ],
+          "selections": [
+            {
+              "id": "sortBy",
+              "value": "NEWEST_TO_OLDEST_BY_LANGUAGE"
+            }
+          ]
+        }
+      }
+    },
+    "query": "query PropertyFilteredReviewsQuery($context: ContextInput!, $propertyId: String!, $searchCriteria: PropertySearchCriteriaInput!) {\n  propertyReviewSummaries(\n    context: $context\n    propertyIds: [$propertyId]\n    searchCriteria: $searchCriteria\n  ) {\n    ...__PropertyReviewSummaryFragment\n    __typename\n  }\n  propertyInfo(context: $context, propertyId: $propertyId) {\n    id\n    reviewInfo(searchCriteria: $searchCriteria) {\n      ...__PropertyReviewsListFragment\n      sortAndFilter {\n        ...TravelerTypeFragment\n        ...SortTypeFragment\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment __PropertyReviewSummaryFragment on PropertyReviewSummary {\n  accessibilityLabel\n  overallScoreWithDescription\n  propertyReviewCountDetails {\n    fullDescription\n    __typename\n  }\n  ...ReviewDisclaimerFragment\n  reviewSummaryDetails {\n    label\n    ratingPercentage\n    formattedRatingOutOfMax\n    __typename\n  }\n  totalCount {\n    raw\n    __typename\n  }\n  __typename\n}\n\nfragment ReviewDisclaimerFragment on PropertyReviewSummary {\n  reviewDisclaimer\n  reviewDisclaimerLabel\n  reviewDisclaimerAnalytics {\n    referrerId\n    linkName\n    __typename\n  }\n  reviewDisclaimerUrl {\n    value\n    accessibilityLabel\n    link {\n      url\n      __typename\n    }\n    __typename\n  }\n  reviewDisclaimerAccessibilityLabel\n  __typename\n}\n\nfragment __PropertyReviewsListFragment on PropertyReviews {\n  summary {\n    paginateAction {\n      text\n      analytics {\n        referrerId\n        linkName\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n  reviews {\n    contentDirectFeedbackPromptId\n    ...ReviewParentFragment\n    managementResponses {\n      ...ReviewChildFragment\n      __typename\n    }\n    reviewInteractionSections {\n      primaryDisplayString\n      reviewInteractionType\n      __typename\n    }\n    __typename\n  }\n  ...NoResultsMessageFragment\n  __typename\n}\n\nfragment ReviewParentFragment on PropertyReview {\n  id\n  superlative\n  locale\n  title\n  brandType\n  reviewScoreWithDescription {\n    label\n    value\n    __typename\n  }\n  text\n  seeMoreAnalytics {\n    linkName\n    referrerId\n    __typename\n  }\n  submissionTime {\n    longDateFormat\n    __typename\n  }\n  impressionAnalytics {\n    event\n    referrerId\n    __typename\n  }\n  themes {\n    ...ReviewThemeFragment\n    __typename\n  }\n  reviewFooter {\n    ...PropertyReviewFooterSectionFragment\n    __typename\n  }\n  ...FeedbackIndicatorFragment\n  ...AuthorFragment\n  ...PhotosFragment\n  ...TravelersFragment\n  ...ReviewTranslationInfoFragment\n  ...PropertyReviewSourceFragment\n  ...PropertyReviewRegionFragment\n  __typename\n}\n\nfragment AuthorFragment on PropertyReview {\n  reviewAuthorAttribution {\n    text\n    __typename\n  }\n  __typename\n}\n\nfragment PhotosFragment on PropertyReview {\n  id\n  photoSection {\n    imageClickAnalytics {\n      referrerId\n      linkName\n      __typename\n    }\n    exitAnalytics {\n      referrerId\n      linkName\n      __typename\n    }\n    navClickAnalytics {\n      referrerId\n      linkName\n      __typename\n    }\n    __typename\n  }\n  photos {\n    description\n    url\n    __typename\n  }\n  __typename\n}\n\nfragment TravelersFragment on PropertyReview {\n  travelers\n  __typename\n}\n\nfragment ReviewThemeFragment on ReviewThemes {\n  icon {\n    id\n    __typename\n  }\n  label\n  __typename\n}\n\nfragment FeedbackIndicatorFragment on PropertyReview {\n  reviewInteractionSections {\n    primaryDisplayString\n    accessibilityLabel\n    reviewInteractionType\n    feedbackAnalytics {\n      linkName\n      referrerId\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n\nfragment ReviewTranslationInfoFragment on PropertyReview {\n  translationInfo {\n    loadingTranslationText\n    targetLocale\n    translatedBy {\n      description\n      __typename\n    }\n    translationCallToActionLabel\n    seeOriginalText\n    __typename\n  }\n  __typename\n}\n\nfragment PropertyReviewSourceFragment on PropertyReview {\n  propertyReviewSource {\n    accessibilityLabel\n    graphic {\n      description\n      id\n      size\n      token\n      url {\n        value\n        __typename\n      }\n      __typename\n    }\n    text {\n      value\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n\nfragment PropertyReviewRegionFragment on PropertyReview {\n  reviewRegion {\n    id\n    __typename\n  }\n  __typename\n}\n\nfragment PropertyReviewFooterSectionFragment on PropertyReviewFooterSection {\n  messages {\n    seoStructuredData {\n      itemscope\n      itemprop\n      itemtype\n      content\n      __typename\n    }\n    text {\n      ... on EGDSPlainText {\n        text\n        __typename\n      }\n      ... on EGDSGraphicText {\n        text\n        graphic {\n          ... on Mark {\n            description\n            id\n            size\n            url {\n              ... on HttpURI {\n                relativePath\n                value\n                __typename\n              }\n              __typename\n            }\n            __typename\n          }\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n\nfragment ReviewChildFragment on ManagementResponse {\n  id\n  header {\n    text\n    __typename\n  }\n  response\n  __typename\n}\n\nfragment NoResultsMessageFragment on PropertyReviews {\n  noResultsMessage {\n    __typename\n    ...MessagingCardFragment\n    ...EmptyStateFragment\n  }\n  __typename\n}\n\nfragment MessagingCardFragment on UIMessagingCard {\n  graphic {\n    __typename\n    ... on Icon {\n      id\n      description\n      __typename\n    }\n  }\n  primary\n  secondaries\n  __typename\n}\n\nfragment EmptyStateFragment on UIEmptyState {\n  heading\n  body\n  __typename\n}\n\nfragment TravelerTypeFragment on SortAndFilterViewModel {\n  sortAndFilter {\n    name\n    label\n    options {\n      label\n      isSelected\n      optionValue\n      description\n      clickAnalytics {\n        linkName\n        referrerId\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n\nfragment SortTypeFragment on SortAndFilterViewModel {\n  sortAndFilter {\n    name\n    label\n    clickAnalytics {\n      linkName\n      referrerId\n      __typename\n    }\n    options {\n      label\n      isSelected\n      optionValue\n      description\n      clickAnalytics {\n        linkName\n        referrerId\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n"
+  }
+])

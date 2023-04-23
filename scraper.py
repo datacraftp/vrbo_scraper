@@ -1,7 +1,7 @@
 import requests
 import json
-from payload import payload_data
-import csv
+from payload import payload_data, payload_comments
+from tools import extract_busines_id
 
 URL = 'https://www.vrbo.com/graphql'
 
@@ -12,7 +12,7 @@ headers = {
     'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36'
 
     }
-list_data = []
+
 def get_api_data(page:int,checkin:str,checkout:str, region:str):
     checkin = checkin.split('/')    
     checkout = checkout.split('/')
@@ -21,7 +21,7 @@ def get_api_data(page:int,checkin:str,checkout:str, region:str):
     print(f'Page Number Scraping..{page}')
     
     data = json.loads(payload_data)
-    #Set payload payload
+    #Set payload page
     data[0]['variables']['criteria']['secondary']['counts'][0]['value'] = page
     #Set the Checkin payload
     #Day
@@ -40,15 +40,13 @@ def get_api_data(page:int,checkin:str,checkout:str, region:str):
     data[0]['variables']['criteria']['primary']['dateRange']['checkOutDate']['year'] = int(checkout[2])
     #Set the region in payload
     data[0]['variables']['criteria']['primary']['destination']['regionName'] = str(region)
-
-    # print(data)
-    req = requests.post(URL, headers=headers,json=data)    
-    req_json = req.json()[0]
     
+    req = requests.post(URL, headers=headers,json=data)    
+    req_json = req.json()[0]    
     
     return req_json
 
-# print(data)
+
 def data_filter(data):
     local_dlist  = []
 
@@ -83,4 +81,44 @@ def data_filter(data):
         return local_dlist
     else:
         return None
+
+def scrape_coments(url):
+   
+    busines_id = extract_busines_id(url)
+    payload_json_c = json.loads(payload_comments)
+    #Add busines id to the payload
+    payload_json_c[0]['variables']['propertyId'] = busines_id   
+
+    req = requests.post(URL, headers=headers,json=payload_json_c)
+    reviews_json_data = req.json()[0]['data']['propertyInfo']['reviewInfo']['reviews']
+    coment_list = []
+
+    for x in reviews_json_data:
+        coment_data = {
+                        'url': url.strip(),
+                        'busines_id': busines_id,
+                        'title': x['title'].strip(),
+                        'text' : x['text'].strip(),
+                        'author': x['reviewAuthorAttribution']['text'].strip(),
+                        'comment_date': x['submissionTime']['longDateFormat'].strip(),
+                        'rating': x['reviewScoreWithDescription']['value'].strip()                     
+                    }
+        coment_list.append(coment_data)
+    return coment_list
+
+def scrape_hotels(check_in_date,check_out_date,region):
+
+    page = 0  
+    list_data = []
+    while True:
+        
+        data = get_api_data(page,check_in_date,check_out_date,region) 
+        results = data_filter(data)
+        if results != None:
+            list_data.extend(results)            
+            page += 50
+        else:
+            print('Scraped Finised')
+            break
+    return list_data
 
