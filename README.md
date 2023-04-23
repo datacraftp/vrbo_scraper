@@ -9,18 +9,24 @@ To use this program, you will need to have Python 3.x installed on your machine.
 - requests module
 - json module
 - csv module
+## JSON configuration file
 
+The JSON configuration file should contain the following fields:
+```JSON
+{
+    "hotels": true,
+    "check_in": "13/09/2023",
+    "check_out": "14/09/2023",
+    "region": "New york, New york, United States of America",
+    "comments": true
+}
+```
+If you set 'hotels': false, it will only scrape the comments for the urls that are already in the DB.
+If you set 'comments': false, it will only scrape hotels.
+Set true if you want both option to be done.
 ## Usage
-- Open the main.py file in a text editor.
-- Set the check_in_date, check_out_date, and region variables to your desired values.
-- Run the main.py file to start the web scraping process.
-- The scraped data will be saved to a data.csv file in the same directory.
-### Code Overview
-- The project consists of two files: scraper.py and main.py.
-
-- scraper.py
-This file contains the functions responsible for extracting data from the website.
-
-- main.py
-- This file imports the get_api_data() and data_filter() functions from scraper.py and uses them to scrape data from the website. The scraped data is saved to a CSV file.
+- Set the config.json file with desired option
+- To run the script, execute the following command:
+```python main.py --config config.json```
+- The scraped data will be saved to sqlite3 database file in the same directory.
 
