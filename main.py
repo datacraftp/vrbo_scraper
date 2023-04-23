@@ -27,7 +27,7 @@ if args.config:
         ##Scraping comments..
         if urls_list != None:
             list_coments = []
-            for url in urls_list[:30]:
+            for url in urls_list:
                 results = scrape_coments(url[0])
                 list_coments.extend(results)
 
